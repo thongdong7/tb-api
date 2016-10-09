@@ -41,3 +41,10 @@ API will be available at http://localhost:5000/api/Hello/world?name=Peter and th
 
 * No API configuration
 * Cross domain support
+* Support python 2.7, 2.4, 3.5, pypy
+
+# TODO
+
+* Add example
+* Add unit test for example
+* Support load service via service loader (IOC or custom service loader)
