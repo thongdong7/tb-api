@@ -4,13 +4,14 @@ from setuptools import setup, find_packages
 
 setup(
     name='tb-api',
-    version='0.0.1.dev',
+    version='0.0.3',
     description='Simple Flask API',
     author='Thong Dong',
     author_email='thongdong7@gmail.com',
     url='https://github.com/thongdong7/tb-api',
     packages=find_packages(exclude=["build", "dist", "tests*"]),
     install_requires=[
+        'click==6.6',
         'flask',
     ],
     # extras_require={

@@ -36,3 +36,8 @@ API will be available at http://localhost:5000/api/Hello/world?name=Peter and th
   "message": "Hello World, Peter"
 }
 ```
+
+# Main Features
+
+* No API configuration
+* Cross domain support
