@@ -11,6 +11,7 @@ setup(
     url='https://github.com/thongdong7/tb-api',
     packages=find_packages(exclude=["build", "dist", "tests*"]),
     install_requires=[
+        'six',
         'click==6.6',
         'flask',
     ],
