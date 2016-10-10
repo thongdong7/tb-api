@@ -10,5 +10,5 @@ from tb_api.script import start
 @click.option("--project", "project_dir", default=".")
 @click.option("--debug", "debug", is_flag=True)
 def cli_start(base_name, module_suffix, project_dir, debug):
-    print(base_name, module_suffix, project_dir, debug)
+    # print(base_name, module_suffix, project_dir, debug)
     start(base_name, module_suffix, project_dir, debug)
