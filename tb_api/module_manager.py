@@ -1,5 +1,8 @@
 # encoding=utf-8
+import traceback
 from importlib import import_module
+
+from tb_api.exception import ImportModuleError
 
 
 class ModuleManager(object):
@@ -28,8 +31,9 @@ class ModuleManager(object):
             module_full_name = '{0}.{1}'.format(self.base_name, actual_module_name)
             try:
                 module = import_module(module_full_name)
-            except ImportError:
-                raise Exception("Import error", module_full_name)
+            except ImportError as e:
+                # print(traceback.format_exc())
+                raise ImportModuleError(module_full_name, str(e), traceback.format_exc())
 
             # print(module_full_name, module_name)
             # print(module)

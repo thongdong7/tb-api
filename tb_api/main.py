@@ -5,9 +5,12 @@ from flask import Response
 from flask import json
 from flask import request
 
-from tb_api.exception import APIError
+from tb_api.exception import APIError, format_html
 from tb_api.crossdomain import crossdomain
 from tb_api.module_manager import ModuleManager
+
+format_field = '_format'
+ignore_fields = set([format_field])
 
 
 def load_app(base_name, module_suffix='Service', static_folder='static', static_index_file=None):
@@ -27,27 +30,42 @@ def load_app(base_name, module_suffix='Service', static_folder='static', static_
     def api_call(module_name, method_name):
         # print(request.args)
 
-        method = module_manager.get_method(module_name, method_name)
-        # print(method)
+        try:
+            method = module_manager.get_method(module_name, method_name)
+            # print(method)
 
-        params = {}
-        for k in request.args.keys():
-            # print(k)
-            params[k] = request.args.get(k)
+            params = {}
+            for k in request.args.keys():
+                if k in ignore_fields:
+                    continue
+                # print(k)
+                params[k] = request.args.get(k)
 
         # print(params)
 
-        try:
             data = method(**params)
-            return Response(json.dumps(data),
+            try:
+                content = json.dumps(data)
+            except:
+                raise
+            return Response(content,
                             mimetype="application/json")
         except APIError as e:
-            ret = {
-                'ok': False,
-                'message': e.args[0]
-            }
+            error_message = str(e)
+            mimetype = None
 
-            return Response(json.dumps(ret), status=404,
-                            mimetype="application/json")
+            # return request.args.get(format_field)
+            if request.args.get(format_field) == 'html':
+                content = format_html(error_message)
+                mimetype = 'text/html'
+            else:
+                content = json.dumps({
+                    'ok': False,
+                    'message': error_message
+                })
+                mimetype = 'application/json'
+
+            return Response(content, status=404,
+                            mimetype=mimetype)
 
     return app
