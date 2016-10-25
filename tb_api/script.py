@@ -10,7 +10,7 @@ def error_exit_msg(message):
     sys.exit(-1)
 
 
-def start(base_name, module_suffix='Service', project_dir=".", debug=True):
+def start(base_name, module_suffix='Service', project_dir=".", debug=True, port=5000):
     if not exists(project_dir):
         error_exit_msg("Invalid project %s" % project_dir)
 
@@ -21,4 +21,4 @@ def start(base_name, module_suffix='Service', project_dir=".", debug=True):
 
     app = load_app(base_name, module_suffix=module_suffix,
                    static_folder=static_folder, static_index_file=static_index_file)
-    app.run(debug=debug)
+    app.run(debug=debug, port=port)

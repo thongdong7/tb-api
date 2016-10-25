@@ -32,7 +32,7 @@ class ModuleManager(object):
             try:
                 module = import_module(module_full_name)
             except ImportError as e:
-                # print(traceback.format_exc())
+                print(traceback.format_exc())
                 raise ImportModuleError(module_full_name, str(e), traceback.format_exc())
 
             # print(module_full_name, module_name)

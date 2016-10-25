@@ -4,6 +4,7 @@ from flask import Flask
 from flask import Response
 from flask import json
 from flask import request
+from os.path import exists
 
 from tb_api.exception import APIError, format_html
 from tb_api.crossdomain import crossdomain
@@ -21,7 +22,10 @@ def load_app(base_name, module_suffix='Service', static_folder='static', static_
     @app.route("/")
     def index():
         if static_index_file:
-            return open(static_index_file).read()
+            if exists(static_index_file):
+                return open(static_index_file).read()
+            else:
+                return "File %s does not exists" % static_index_file
 
         return "Hello World!"
 

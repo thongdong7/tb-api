@@ -28,6 +28,12 @@ You could start your API by following command
 api my_package.service --module-suffix Service --project . --debug
 ```
 
+or programmatically
+
+```python
+start(base_name, module_suffix, project_dir, debug)
+```
+
 API will be available at http://localhost:5000/api/Hello/world?name=Peter and the result will be
 
 ```json
