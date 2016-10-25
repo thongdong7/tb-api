@@ -64,3 +64,9 @@ class ImportModuleClassError(APIError):
     def __str__(self):
         module_full_name, actual_module_name = self.args
         return 'Could not find class {0} in {1}'.format(actual_module_name, module_full_name)
+
+
+class InvalidMethodError(APIError):
+    def __str__(self):
+        module_name, method_name = self.args
+        return "API '{0}' does not have method '{1}'. Maybe it is not added or has a typo".format(module_name, method_name)

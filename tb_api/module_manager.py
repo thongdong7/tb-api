@@ -2,7 +2,7 @@
 import traceback
 from importlib import import_module
 
-from tb_api.exception import ImportModuleError, ImportModuleClassError
+from tb_api.exception import ImportModuleError, ImportModuleClassError, InvalidMethodError
 
 
 class ModuleManager(object):
@@ -19,7 +19,7 @@ class ModuleManager(object):
             try:
                 method = getattr(obj, method_name)
             except AttributeError:
-                raise Exception("Invalid method", module_name, method_name)
+                raise InvalidMethodError(module_name, method_name)
 
             self.cache[key] = method
 

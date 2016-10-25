@@ -31,6 +31,8 @@ def load_app(base_name, module_suffix='Service', static_folder='static', static_
 
     def _handle_api(module_name, method_name):
         try:
+            module_name = module_name.replace('-', '_')
+            method_name = method_name.replace('-', '_')
             method = module_manager.get_method(module_name, method_name)
             # print(method)
 
