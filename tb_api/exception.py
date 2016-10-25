@@ -58,3 +58,9 @@ class ImportModuleError(APIError):
             module_full_path,
             ':'.join(user_paths)
         )
+
+
+class ImportModuleClassError(APIError):
+    def __str__(self):
+        module_full_name, actual_module_name = self.args
+        return 'Could not find class {0} in {1}'.format(actual_module_name, module_full_name)

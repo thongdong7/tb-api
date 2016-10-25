@@ -29,11 +29,7 @@ def load_app(base_name, module_suffix='Service', static_folder='static', static_
 
         return "Hello World!"
 
-    @app.route("/api/<module_name>/<method_name>")
-    @crossdomain(origin='*')
-    def api_call(module_name, method_name):
-        # print(request.args)
-
+    def _handle_api(module_name, method_name):
         try:
             method = module_manager.get_method(module_name, method_name)
             # print(method)
@@ -71,5 +67,17 @@ def load_app(base_name, module_suffix='Service', static_folder='static', static_
 
             return Response(content, status=404,
                             mimetype=mimetype)
+
+    @app.route("/api/<module_name>")
+    @crossdomain(origin='*')
+    def api_call(module_name):
+        return _handle_api(module_name, method_name='index')
+
+    @app.route("/api/<module_name>/<method_name>")
+    @crossdomain(origin='*')
+    def api_call_full(module_name, method_name):
+        # print(request.args)
+
+        return _handle_api(module_name, method_name)
 
     return app

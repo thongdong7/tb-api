@@ -2,7 +2,7 @@
 import traceback
 from importlib import import_module
 
-from tb_api.exception import ImportModuleError
+from tb_api.exception import ImportModuleError, ImportModuleClassError
 
 
 class ModuleManager(object):
@@ -38,7 +38,10 @@ class ModuleManager(object):
             # print(module_full_name, module_name)
             # print(module)
 
-            clazz = getattr(module, actual_module_name)
+            try:
+                clazz = getattr(module, actual_module_name)
+            except AttributeError:
+                raise ImportModuleClassError(module_full_name, actual_module_name)
 
             self.cache_module[module_name] = clazz()
 
