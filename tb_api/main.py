@@ -9,6 +9,7 @@ from os.path import exists
 from tb_api.exception import APIError, format_html
 from tb_api.crossdomain import crossdomain
 from tb_api.module_manager import ModuleManager
+from tb_api.utils.response_utils import build_error_response
 
 format_field = '_format'
 ignore_fields = set([format_field])
@@ -69,6 +70,12 @@ def load_app(base_name, module_suffix='Service', static_folder='static', static_
 
             return Response(content, status=404,
                             mimetype=mimetype)
+        except Exception as e:
+            if hasattr(e, 'to_json'):
+                return build_error_response(e.to_json())
+            else:
+                # TODO Handle this case
+                raise
 
     @app.route("/api/<module_name>")
     @crossdomain(origin='*')
