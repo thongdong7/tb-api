@@ -9,10 +9,11 @@ from os.path import exists
 from tb_api.exception import APIError, format_html
 from tb_api.crossdomain import crossdomain
 from tb_api.module_manager import ModuleManager
-from tb_api.utils.response_utils import build_error_response
+from tb_api.utils.response_utils import build_error_response, error_response
 
 format_field = '_format'
 ignore_fields = set([format_field])
+supported_static_files = set(['favicon.ico'])
 
 
 def load_app(base_name, module_suffix='Service', static_folder='static', static_index_file=None):
@@ -88,5 +89,12 @@ def load_app(base_name, module_suffix='Service', static_folder='static', static_
         # print(request.args)
 
         return _handle_api(module_name, method_name)
+
+    @app.route("/<path>")
+    def static_file(path):
+        if path in supported_static_files and exists(path):
+            return open(path, 'rb').read()
+
+        return error_response('Unknown file %s' % path)
 
     return app

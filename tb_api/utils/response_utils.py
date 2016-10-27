@@ -9,3 +9,7 @@ def build_error_response(data):
     mimetype = 'application/json'
     return Response(content, status=404,
                     mimetype=mimetype)
+
+
+def error_response(content):
+    return Response(content, status=404)
