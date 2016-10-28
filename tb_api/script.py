@@ -17,8 +17,7 @@ def start(base_name, module_suffix='Service', project_dir=".", debug=True, port=
     project_dir = abspath(project_dir)
 
     static_folder = join(project_dir, 'static')
-    static_index_file = join(project_dir, 'index.html')
 
     app = load_app(base_name, module_suffix=module_suffix,
-                   static_folder=static_folder, static_index_file=static_index_file)
+                   static_folder=static_folder, project_dir=project_dir)
     app.run(debug=debug, port=port)

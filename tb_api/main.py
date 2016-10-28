@@ -4,7 +4,7 @@ from flask import Flask
 from flask import Response
 from flask import json
 from flask import request
-from os.path import exists
+from os.path import exists, join
 
 from tb_api.exception import APIError, format_html
 from tb_api.crossdomain import crossdomain
@@ -16,8 +16,10 @@ ignore_fields = set([format_field])
 supported_static_files = set(['favicon.ico'])
 
 
-def load_app(base_name, module_suffix='Service', static_folder='static', static_index_file=None):
+def load_app(base_name, module_suffix='Service', static_folder='static', project_dir=None):
     app = Flask(__name__, static_folder=static_folder)
+
+    static_index_file = join(project_dir, 'index.html')
 
     module_manager = ModuleManager(base_name, module_suffix=module_suffix)
 
@@ -92,8 +94,9 @@ def load_app(base_name, module_suffix='Service', static_folder='static', static_
 
     @app.route("/<path>")
     def static_file(path):
-        if path in supported_static_files and exists(path):
-            return open(path, 'rb').read()
+        if path in supported_static_files:
+            real_path = join(project_dir, path)
+            return open(real_path, 'rb').read()
 
         return error_response('Unknown file %s' % path)
 
