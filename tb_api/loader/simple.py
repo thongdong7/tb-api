@@ -3,9 +3,10 @@ import traceback
 from importlib import import_module
 
 from tb_api.exception import ImportModuleError, ImportModuleClassError, InvalidMethodError
+from tb_api.loader.core import Loader
 
 
-class ModuleManager(object):
+class LoaderSimple(Loader):
     def __init__(self, base_name, module_suffix=""):
         self.module_suffix = module_suffix
         self.base_name = base_name

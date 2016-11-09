@@ -14,6 +14,7 @@ setup(
         'six',
         'click==6.6',
         'flask',
+        'tb-ioc==0.2.1'
     ],
     # extras_require={
     #     'cli': [

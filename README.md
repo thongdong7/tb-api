@@ -43,6 +43,16 @@ API will be available at http://localhost:5000/api/Hello/world?name=Peter and th
 }
 ```
 
+## Command
+
+```
+api [--project /path/to/project] [--debug] [--port my_port] <loader> [loader arguments]
+```
+
+`loader` could be `simple` or `ioc`
+
+Run `api loader --help` for more info
+
 # Main Features
 
 * No API configuration

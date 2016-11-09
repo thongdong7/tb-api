@@ -1,14 +1,14 @@
 # encoding=utf-8
 
-from flask import Flask
-from flask import Response
-from flask import json
-from flask import request
 from os.path import exists, join
 
-from tb_api.exception import APIError, format_html
+from flask import Flask
+from flask import Response
+from flask import request
+
 from tb_api.crossdomain import crossdomain
-from tb_api.module_manager import ModuleManager
+from tb_api.exception import APIError, format_html
+from tb_api.utils.json_utils import JsonDumper
 from tb_api.utils.response_utils import build_error_response, error_response
 
 format_field = '_format'
@@ -16,12 +16,11 @@ ignore_fields = set([format_field])
 supported_static_files = set(['favicon.ico'])
 
 
-def load_app(base_name, module_suffix='Service', static_folder='static', project_dir=None):
+def load_app(loader, static_folder='static', project_dir=None):
     app = Flask(__name__, static_folder=static_folder)
+    json_dumper = JsonDumper(cls=loader.json_dump_cls())
 
     static_index_file = join(project_dir, 'index.html')
-
-    module_manager = ModuleManager(base_name, module_suffix=module_suffix)
 
     @app.route("/")
     def index():
@@ -37,7 +36,7 @@ def load_app(base_name, module_suffix='Service', static_folder='static', project
         try:
             module_name = module_name.replace('-', '_')
             method_name = method_name.replace('-', '_')
-            method = module_manager.get_method(module_name, method_name)
+            method = loader.get_method(module_name, method_name)
             # print(method)
 
             params = {}
@@ -47,11 +46,11 @@ def load_app(base_name, module_suffix='Service', static_folder='static', project
                 # print(k)
                 params[k] = request.args.get(k)
 
-        # print(params)
+                # print(params)
 
             data = method(**params)
             try:
-                content = json.dumps(data)
+                content = json_dumper.dumps(data)
             except:
                 raise
             return Response(content,
@@ -65,7 +64,7 @@ def load_app(base_name, module_suffix='Service', static_folder='static', project
                 content = format_html(error_message)
                 mimetype = 'text/html'
             else:
-                content = json.dumps({
+                content = json_dumper.dumps({
                     'ok': False,
                     'message': error_message
                 })
@@ -96,7 +95,8 @@ def load_app(base_name, module_suffix='Service', static_folder='static', project
     def static_file(path):
         if path in supported_static_files:
             real_path = join(project_dir, path)
-            return open(real_path, 'rb').read()
+            if exists(real_path):
+                return open(real_path, 'rb').read()
 
         return error_response('Unknown file %s' % path)
 
