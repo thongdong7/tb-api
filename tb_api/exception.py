@@ -49,10 +49,10 @@ class ImportModuleError(APIError):
             return "Import module [b]{0}[/b] failed (file://{1})." \
                    "\n[b]Error when import: {2}." \
                    "[/b]\n----------------------\n{3}".format(
-                        module_full_path, real_path,
-                        str(error),
-                        traceback_text
-                    )
+                module_full_path, real_path,
+                str(error),
+                traceback_text
+            )
 
         return "Could not find module {0}. PYTHONPATH: {1}".format(
             module_full_path,
@@ -69,4 +69,13 @@ class ImportModuleClassError(APIError):
 class InvalidMethodError(APIError):
     def __str__(self):
         module_name, method_name = self.args
-        return "API '{0}' does not have method '{1}'. Maybe it is not added or has a typo".format(module_name, method_name)
+        return "API '{0}' does not have method '{1}'. Maybe it is not added or has a typo".format(module_name,
+                                                                                                  method_name)
+
+
+class UnauthorizedError(APIError):
+    def __str__(self):
+        module_name, method_name = self.args
+        return "Not authorized to access '{0}/{1}'. " \
+               "Let double check if the url is correct and the configuration is right".format(module_name,
+                                                                                              method_name)

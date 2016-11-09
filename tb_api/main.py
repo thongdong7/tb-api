@@ -20,6 +20,15 @@ def load_app(loader, static_folder='static', project_dir=None):
     app = Flask(__name__, static_folder=static_folder)
     json_dumper = JsonDumper(cls=loader.json_dump_cls())
 
+    # Load the secret key if any
+    secret_key = loader.secret_key()
+    if secret_key:
+        app.secret_key = secret_key
+
+    # Execute handlers
+    for handler in loader.get_app_handlers():
+        handler(app)
+
     static_index_file = join(project_dir, 'index.html')
 
     @app.route("/")
