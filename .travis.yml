@@ -9,6 +9,8 @@ before_install:
   - pip install -e .
   # Test api script
   - api --help
+  - api simple --help
+  - api ioc --help
 
 # command to run tests
 script:
