@@ -29,7 +29,13 @@ class LoaderIOC(Loader):
             obj = self.ioc.get(service_name)
             method = getattr(obj, method_path)
 
+            # Decor method. useful for authentication check or variable converter
+            for decor_name in method_config.require:
+                decor = self.ioc.get(decor_name)
+                method = decor(method)
+
             self._cache_methods[key] = method
+
         return self._cache_methods[key]
 
     def json_dump_cls(self):

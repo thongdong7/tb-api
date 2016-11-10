@@ -58,6 +58,9 @@ def load_app(loader, static_folder='static', project_dir=None):
                 # print(params)
 
             data = method(**params)
+            if isinstance(data, Response):
+                return data
+
             try:
                 content = json_dumper.dumps(data)
             except:

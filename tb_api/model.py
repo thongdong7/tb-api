@@ -10,7 +10,8 @@ class Config(object):
 
 
 class APIMethodConfig(object):
-    def __init__(self, module_name, method_name, fields, tags=[], http_methods=[]):
+    def __init__(self, module_name, method_name, fields, tags=[], http_methods=[], require=[]):
+        self.require = require
         self.tags = tags
         self.module_name = module_name
         self.method_name = method_name
@@ -42,16 +43,19 @@ class APIConfig(object):
 
             methods = module_config.get('methods', {})
             tags = module_config.get('tags', [])
+            require = module_config.get('require', [])
 
             for method_name in methods:
                 method_config = methods[method_name]
                 method_path = method_config.get('path', method_name)
                 fields = [APIFieldConfig(_) for _ in method_config.get('fields', [])]
                 method_tags = tags + method_config.get('tags', [])
+                method_require = require + method_config.get('require', [])
                 http_methods = method_config.get('method', ['get'])
 
                 method_config = APIMethodConfig(module_name, method_name, fields,
-                                                tags=method_tags, http_methods=http_methods)
+                                                tags=method_tags, http_methods=http_methods,
+                                                require=method_require)
 
                 self.path_map[module_path][method_path] = method_config
 
