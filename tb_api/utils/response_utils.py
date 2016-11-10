@@ -11,5 +11,11 @@ def build_error_response(data):
                     mimetype=mimetype)
 
 
+def build_response(json_dumper, data):
+    content = json_dumper.dumps(data)
+    mimetype = 'application/json'
+    return Response(content, mimetype=mimetype)
+
+
 def error_response(content):
     return Response(content, status=404)

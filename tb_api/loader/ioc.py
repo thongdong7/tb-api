@@ -2,36 +2,7 @@ from tb_ioc import IOC
 
 from tb_api.exception import UnauthorizedError
 from tb_api.loader.core import Loader
-
-
-class APIMethodConfig(object):
-    def __init__(self, module_name, method_name):
-        self.module_name = module_name
-        self.method_name = method_name
-
-
-class APIConfig(object):
-    def __init__(self, data):
-        self.data = data
-
-        self.path_map = {}
-
-        for module_name in data:
-            module_config = data[module_name]
-            module_path = module_config.get('path', module_name)
-            if module_path not in self.path_map:
-                self.path_map[module_path] = {}
-
-            methods = module_config.get('methods', {})
-
-            for method_name in methods:
-                method_config = methods[method_name]
-                method_path = method_config.get('path', method_name)
-
-                self.path_map[module_path][method_path] = APIMethodConfig(module_name, method_name)
-
-    def get_config(self, module_path, method_path):
-        return self.path_map.get(module_path, {}).get(method_path)
+from tb_api.model import APIConfig
 
 
 class LoaderIOC(Loader):

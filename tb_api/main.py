@@ -5,11 +5,11 @@ from os.path import exists, join
 from flask import Flask
 from flask import Response
 from flask import request
-
 from tb_api.crossdomain import crossdomain
 from tb_api.exception import APIError, format_html
 from tb_api.utils.json_utils import JsonDumper
-from tb_api.utils.response_utils import build_error_response, error_response
+from tb_api.utils.response_utils import build_error_response, error_response, build_response
+from tb_api.utils.swagger_utils import flask_build_swagger
 
 format_field = '_format'
 ignore_fields = set([format_field])
@@ -85,8 +85,16 @@ def load_app(loader, static_folder='static', project_dir=None):
             if hasattr(e, 'to_json'):
                 return build_error_response(e.to_json())
             else:
-                # TODO Handle this case
-                raise
+                if request.args.get(format_field) == 'html':
+                    # TODO Handle this case
+                    raise
+                else:
+                    # TODO Fix the url
+                    return build_error_response({
+                        'ok': False,
+                        'message': str(e),
+                        'hint': 'Access {0}?_format=html for more info'.format(request.url)
+                    })
 
     @app.route("/api/<module_name>")
     @crossdomain(origin='*')
@@ -99,6 +107,12 @@ def load_app(loader, static_folder='static', project_dir=None):
         # print(request.args)
 
         return _handle_api(module_name, method_name)
+
+    @app.route("/swagger.json")
+    @crossdomain(origin='*')
+    def swagger():
+        data = flask_build_swagger(loader.config)
+        return build_response(json_dumper, data)
 
     @app.route("/<path>")
     def static_file(path):
