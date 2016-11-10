@@ -24,6 +24,7 @@ class APIFieldConfig(object):
         self.description = config.get('description', '')
         self.required = config.get('required', True)
         self.type = config.get('type', 'string')
+        self.defaultValue = config.get('default')
 
 
 class APIConfig(object):
@@ -32,8 +33,9 @@ class APIConfig(object):
 
         self.path_map = {}
 
-        for module_name in data:
-            module_config = data[module_name]
+        services = data.get('services', {})
+        for module_name in services:
+            module_config = services[module_name]
             module_path = module_config.get('path', module_name)
             if module_path not in self.path_map:
                 self.path_map[module_path] = {}

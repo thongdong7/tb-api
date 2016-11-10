@@ -7,24 +7,26 @@ from tb_api.utils.swagger_utils import build_swagger
 class SwaggerUtilsTestCase(unittest.TestCase):
     def test_01(self):
         data = {
-            "User": {
-                "path": "user",
-                "tags": ["User", "User1"],
-                "methods": {
-                    "login": {
-                        "method": ['post'],
-                        "fields": [
-                            {
-                                "name": "username",
-                            },
-                            {
-                                "name": "password",
-                            },
-                            {
-                                "name": "remember_me",
-                                "type": "boolean"
-                            },
-                        ]
+            "services": {
+                "User": {
+                    "path": "user",
+                    "tags": ["User", "User1"],
+                    "methods": {
+                        "login": {
+                            "method": ['post'],
+                            "fields": [
+                                {
+                                    "name": "username",
+                                },
+                                {
+                                    "name": "password",
+                                },
+                                {
+                                    "name": "remember_me",
+                                    "type": "boolean"
+                                },
+                            ]
+                        }
                     }
                 }
             }
