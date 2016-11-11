@@ -11,6 +11,9 @@ class Loader(object):
     def json_dump_cls(self):
         return None
 
+    def get_ignore_fields(self):
+        return []
+
     def secret_key(self):
         """
         Return None = no session (for API without session)

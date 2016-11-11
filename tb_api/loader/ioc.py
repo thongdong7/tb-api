@@ -51,3 +51,6 @@ class LoaderIOC(Loader):
             ret.append(self.ioc.get(name))
 
         return ret
+
+    def get_ignore_fields(self):
+        return self.ioc.get_parameter('API_IgnoreFields', [])

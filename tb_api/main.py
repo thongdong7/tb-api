@@ -11,13 +11,13 @@ from tb_api.utils.response_utils import build_error_response, error_response, bu
 from tb_api.utils.swagger_utils import flask_build_swagger
 
 format_field = '_format'
-ignore_fields = set([format_field])
 supported_static_files = set(['favicon.ico'])
 
 
 def load_app(loader, static_folder='static', project_dir=None):
     app = Flask(__name__, static_folder=static_folder)
     json_dumper = JsonDumper(cls=loader.json_dump_cls())
+    ignore_fields = set([format_field, '_'] + loader.get_ignore_fields())
 
     # Load the secret key if any
     secret_key = loader.secret_key()

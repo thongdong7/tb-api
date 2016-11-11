@@ -64,3 +64,5 @@ Run `api loader --help` for more info
 * Add example
 * Add unit test for example
 * Support load service via service loader (IOC or custom service loader)
+* Support REST. Follow standard at https://github.com/refinery29/api-standards
+* Support version
