@@ -10,13 +10,11 @@ class Config(object):
 
 
 class APIMethodConfig(object):
-    def __init__(self, module_name, method_name, fields, tags=[], http_methods=[], require=[]):
-        self.require = require
-        self.tags = tags
-        self.module_name = module_name
-        self.method_name = method_name
-        self.fields = fields
-        self.http_methods = http_methods
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+
+    def __getattr__(self, item):
+        return self.kwargs.get(item)
 
 
 class APIFieldConfig(object):
@@ -29,6 +27,12 @@ class APIFieldConfig(object):
 
 
 class APIConfig(object):
+    copy_fields = [
+        ('summary', 'summary', None),
+        ('description', 'description', None),
+        ('method', 'http_methods', ['get']),
+    ]
+
     def __init__(self, data):
         self.data = data
 
@@ -51,11 +55,18 @@ class APIConfig(object):
                 fields = [APIFieldConfig(_) for _ in method_config.get('fields', [])]
                 method_tags = tags + method_config.get('tags', [])
                 method_require = require + method_config.get('require', [])
-                http_methods = method_config.get('method', ['get'])
+                params = {
+                    'module_name': module_name,
+                    'method_name': method_name,
+                    'fields': fields,
+                    'tags': method_tags,
+                    'require': method_require,
+                }
 
-                method_config = APIMethodConfig(module_name, method_name, fields,
-                                                tags=method_tags, http_methods=http_methods,
-                                                require=method_require)
+                for field, param_field, default_value in self.copy_fields:
+                    params[param_field] = method_config.get(field, default_value)
+
+                method_config = APIMethodConfig(**params)
 
                 self.path_map[module_path][method_path] = method_config
 

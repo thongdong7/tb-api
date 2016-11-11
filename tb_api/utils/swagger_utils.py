@@ -59,8 +59,8 @@ def _build_method_paths(method_config):
             parameters.append(parameter)
 
         ret[method] = {
-            "summary": "",
-            "description": "",
+            "summary": method_config.summary,
+            "description": method_config.description,
             "parameters": parameters,
             # 'produces': [
             #     "text/html",
