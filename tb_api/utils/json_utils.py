@@ -1,6 +1,8 @@
-from flask import json
+import json
+
 from six import string_types
 from tb_ioc.class_utils import get_class
+
 
 class JsonDumper(object):
     def __init__(self, cls=None):

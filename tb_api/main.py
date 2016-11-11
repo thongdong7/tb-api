@@ -1,11 +1,9 @@
 # encoding=utf-8
-
 from os.path import exists, join
 
 from flask import Flask
 from flask import Response
 from flask import request
-from tb_api.crossdomain import crossdomain
 from tb_api.exception import APIError, format_html
 from tb_api.utils.json_utils import JsonDumper
 from tb_api.utils.response_utils import build_error_response, error_response, build_response
@@ -62,8 +60,10 @@ def load_app(loader, static_folder='static', project_dir=None):
                 return data
 
             try:
+                print data
                 content = json_dumper.dumps(data)
-            except:
+            except Exception as e:
+                print ('Error when dump json: {0}. Data: {1}'.format(str(e), data))
                 raise
             return Response(content,
                             mimetype="application/json")
@@ -100,19 +100,16 @@ def load_app(loader, static_folder='static', project_dir=None):
                     })
 
     @app.route("/api/<module_name>")
-    @crossdomain(origin='*')
     def api_call(module_name):
         return _handle_api(module_name, method_name='index')
 
     @app.route("/api/<module_name>/<method_name>")
-    @crossdomain(origin='*')
     def api_call_full(module_name, method_name):
         # print(request.args)
 
         return _handle_api(module_name, method_name)
 
     @app.route("/swagger.json")
-    @crossdomain(origin='*')
     def swagger():
         data = flask_build_swagger(loader.config)
         return build_response(json_dumper, data)
