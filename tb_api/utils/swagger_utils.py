@@ -17,7 +17,7 @@ def build_swagger(config, host):
         "info": {
             "description": "",
             "version": "1.0.0",
-            "title": "Swagger Petstore",
+            "title": "API",
             "termsOfService": "",
             "contact": {
                 "email": ""
