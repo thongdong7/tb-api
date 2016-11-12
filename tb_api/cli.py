@@ -51,7 +51,12 @@ def ioc(ctx, app, config_files, module_suffix):
     final_config_files = list(config_files)
     config = ctx.obj['config']
     if app:
-        app_config_file = join(config.project_dir, 'app', app, 'services.yml')
+        if app == ".":
+            app_config_file = join(config.project_dir, 'services.yml')
+        elif app == "app":
+            app_config_file = join(config.project_dir, 'app', 'services.yml')
+        else:
+            app_config_file = join(config.project_dir, 'app', app, 'services.yml')
         if not exists(app_config_file):
             error_exit_msg('Could not detect app at %s' % app_config_file)
 

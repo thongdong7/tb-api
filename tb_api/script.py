@@ -1,7 +1,6 @@
 import logging
-from os.path import abspath, dirname, join, exists
-
 import sys
+from os.path import abspath, join, exists
 
 from tb_api.main import load_app
 
@@ -32,7 +31,7 @@ def start(config):
     app = load_app(config.loader,
                    static_folder=static_folder, project_dir=project_dir)
     try:
-        app.run(debug=debug, port=port)
+        app.run(host='0.0.0.0', debug=debug, port=port)
     except Exception as e:
         if debug:
             logging.exception(e)
