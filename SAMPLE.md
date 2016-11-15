@@ -11,15 +11,16 @@ parameters:
     - FlaskLogin
 
   API_Config:
-    User:
-      path: user
-      methods:
-        list: {}
-    Product:
-      path: product
-      methods:
-        login: {}
-        logout: {}
+    services:
+      User:
+        path: user
+        methods:
+          list: {}
+      Product:
+        path: product
+        methods:
+          login: {}
+          logout: {}
 services:
   UserService: ...
   ProductService: ...
