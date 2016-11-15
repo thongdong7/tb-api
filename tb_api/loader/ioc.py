@@ -45,7 +45,7 @@ class LoaderIOC(Loader):
         return self.ioc.get_parameter('API_SecretKey')
 
     def get_app_handlers(self):
-        handler_names = self.ioc.get_parameter('API_AppHandler')
+        handler_names = self.ioc.get_parameter('API_AppHandler', [])
         ret = []
         for name in handler_names:
             ret.append(self.ioc.get(name))

@@ -61,7 +61,7 @@ def load_app(loader, static_folder='static', project_dir=None):
                 return data
 
             try:
-                print data
+                # print(data)
                 content = json_dumper.dumps(data)
             except Exception as e:
                 print ('Error when dump json: {0}. Data: {1}'.format(str(e), data))
