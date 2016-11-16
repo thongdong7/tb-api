@@ -12,6 +12,20 @@ class LoaderIOC(Loader):
         for config_file in config_files:
             self.ioc.load_file(config_file)
 
+        self.extra_app_handlers = []
+        cors_params = self.ioc.get_parameter('API_CORS')
+        if cors_params:
+            self.ioc.load({
+                'services': {
+                    'API_FlaskCORS': {
+                        'class': 'uptin_api.app_handler.cors.FlaskCORS',
+                        'arguments': [cors_params]
+                    }
+                }
+            })
+
+            self.extra_app_handlers.append('API_FlaskCORS')
+
         if not module_suffix:
             self.module_suffix = self.ioc.get_parameter('API_ModuleSuffix')
 
@@ -48,6 +62,9 @@ class LoaderIOC(Loader):
         handler_names = self.ioc.get_parameter('API_AppHandler', [])
         ret = []
         for name in handler_names:
+            ret.append(self.ioc.get(name))
+
+        for name in self.extra_app_handlers:
             ret.append(self.ioc.get(name))
 
         return ret
