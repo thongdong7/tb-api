@@ -3,6 +3,13 @@
 
 NOTE: This library just in development mode. Not ready for production.
 
+Features:
+
+* Easy to setup API
+* Cross domain support
+* Session support
+* Customizable
+
 # Install
 
 ```
