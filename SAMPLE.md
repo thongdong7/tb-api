@@ -9,6 +9,10 @@ parameters:
   # Optional. Handlers: the service which callable, will receive `app` object and do somethings. Optional
   API_AppHandler:
     - FlaskLogin
+  # Optional: For cross domain support
+  API_CORS:
+    "/api/*":
+      origin: "*"
 
   API_Config:
     services:
