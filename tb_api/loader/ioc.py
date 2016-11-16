@@ -18,7 +18,7 @@ class LoaderIOC(Loader):
             self.ioc.load({
                 'services': {
                     'API_FlaskCORS': {
-                        'class': 'uptin_api.app_handler.cors.FlaskCORS',
+                        'class': 'tb_api.app_handler.cors.FlaskCORS',
                         'arguments': [cors_params]
                     }
                 }
