@@ -42,8 +42,8 @@ def load_app(loader, static_folder='static', project_dir=None):
 
     def _handle_api(module_name, method_name):
         try:
-            module_name = module_name.replace('-', '_')
-            method_name = method_name.replace('-', '_')
+            # module_name = module_name.replace('-', '_')
+            # method_name = method_name.replace('-', '_')
             method = loader.get_method(module_name, method_name)
             # print(method)
 

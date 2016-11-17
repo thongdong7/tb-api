@@ -41,7 +41,7 @@ class LoaderIOC(Loader):
 
             service_name = '%s%s' % (method_config.module_name, self.module_suffix)
             obj = self.ioc.get(service_name)
-            method = getattr(obj, method_path)
+            method = getattr(obj, method_config.method_name)
 
             # Decor method. useful for authentication check or variable converter
             for decor_name in method_config.require:
