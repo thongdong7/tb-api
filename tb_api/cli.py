@@ -6,7 +6,7 @@ import sys
 
 from tb_api.loader.ioc import LoaderIOC
 from tb_api.loader.simple import LoaderSimple
-from tb_api.model import Config
+from tb_api.model.config import Config
 from tb_api.script import start
 
 

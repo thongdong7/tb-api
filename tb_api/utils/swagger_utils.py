@@ -55,6 +55,10 @@ def _build_method_paths(method_config):
             if field.type == 'boolean':
                 parameter['type'] = 'string'
                 parameter["enum"] = ["true", "false"]
+            elif field.type:
+                parameter['type'] = field.type
+            else:
+                parameter['type'] = 'string'
 
             parameters.append(parameter)
 
@@ -83,13 +87,39 @@ def _build_method_paths(method_config):
     return ret
 
 
+def _path_to_swagger_url(path):
+    ret = []
+    for node in path:
+        if node.is_text:
+            ret.append(node.value)
+        else:
+            ret.append('{%s}' % node.value)
+
+    return ''.join(ret)
+
+
 def _build_paths(config):
     ret = {}
 
-    for module_path in config.path_map:
-        module_config = config.path_map[module_path]
-        for method_path in module_config:
-            method_config = module_config[method_path]
-            ret['/%s/%s' % (module_path, method_path)] = _build_method_paths(method_config)
+    path_router = config.path_router
+    for method, path_tree in path_router.method_trees:
+        # print method, path_tree
+        # path_tree = path_router[method]
+        for path, data in path_tree.paths:
+            url = _path_to_swagger_url(path)
+            # print url, data
+            if url not in ret:
+                ret[url] = {}
+
+            ret[url].update(_build_method_paths(data))
+
+            # for node in path:
+            #     print 'node', node
+
+    # for module_path in config.path_map:
+    #     module_config = config.path_map[module_path]
+    #     for method_path in module_config:
+    #         method_config = module_config[method_path]
+    #         ret['/%s/%s' % (module_path, method_path)] = _build_method_paths(method_config)
 
     return ret

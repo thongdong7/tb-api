@@ -2,7 +2,7 @@ from tb_ioc import IOC
 
 from tb_api.exception import UnauthorizedError
 from tb_api.loader.core import Loader
-from tb_api.model import APIConfig
+from tb_api.model.config import APIConfig
 
 
 class LoaderIOC(Loader):
@@ -18,7 +18,7 @@ class LoaderIOC(Loader):
             self.ioc.load({
                 'services': {
                     'API_FlaskCORS': {
-                        'class': 'uptin_api.app_handler.cors.FlaskCORS',
+                        'class': 'tb_api.app_handler.cors.FlaskCORS',
                         'arguments': [cors_params]
                     }
                 }
@@ -32,16 +32,25 @@ class LoaderIOC(Loader):
         self.config = APIConfig(self.ioc.get_parameter('API_Config', {}))
         self._cache_methods = {}
 
-    def get_method(self, module_path, method_path):
-        key = '%s-%s' % (module_path, method_path)
-        if key not in self._cache_methods:
-            method_config = self.config.get_config(module_path, method_path)
-            if not method_config:
-                raise UnauthorizedError(module_path, method_path)
+    def get_method(self, http_method, url):
+        router_result = self.config.get_config(http_method, url)
 
-            service_name = '%s%s' % (method_config.module_name, self.module_suffix)
+        if not router_result.match:
+            raise UnauthorizedError(http_method, url)
+
+        method_config = router_result.data
+        module_name = method_config.module_name
+        method_name = method_config.method_name
+
+        key = '%s-%s' % (module_name, method_name)
+        if key not in self._cache_methods:
+            if self.module_suffix:
+                service_name = '%s%s' % (module_name, self.module_suffix)
+            else:
+                service_name = module_name
+
             obj = self.ioc.get(service_name)
-            method = getattr(obj, method_path)
+            method = getattr(obj, method_name)
 
             # Decor method. useful for authentication check or variable converter
             for decor_name in method_config.require:

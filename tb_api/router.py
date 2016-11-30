@@ -1,44 +1,53 @@
 import re
 
+import six
+
 from tb_api.model.path import PathTextNode, PathParamNode, Path
 from tb_api.model.router import RouterResult
 from tb_api.utils.router_utils import search_url
 
 
-class PathNodeRouter(object):
+class PathRouter(object):
     path_pattern = re.compile('([^{}]+|{(\w+)})')
+    support_methods = ['get', 'post', 'put', 'patch', 'delete']
 
     def __init__(self):
-        self._tree = {
-            'get': PathTree(),
-            'post': PathTree(),
-            'put': PathTree(),
-            'patch': PathTree(),
-            'delete': PathTree(),
-        }
+        self._tree = {}
+        for method in self.support_methods:
+            self._tree[method] = PathTree()
 
     def __getitem__(self, key):
         return self._tree[key]
 
     @property
-    def get(self):
-        return self._tree['get']
+    def trees(self):
+        for method in self.support_methods:
+            yield self[method]
 
     @property
-    def post(self):
-        return self._tree['post']
+    def method_trees(self):
+        for method in self.support_methods:
+            yield method, self[method]
 
-    @property
-    def put(self):
-        return self._tree['put']
-
-    @property
-    def patch(self):
-        return self._tree['patch']
-
-    @property
-    def delete(self):
-        return self._tree['delete']
+    # @property
+    # def get(self):
+    #     return self._tree['get']
+    #
+    # @property
+    # def post(self):
+    #     return self._tree['post']
+    #
+    # @property
+    # def put(self):
+    #     return self._tree['put']
+    #
+    # @property
+    # def patch(self):
+    #     return self._tree['patch']
+    #
+    # @property
+    # def delete(self):
+    #     return self._tree['delete']
 
     def add_path(self, method, text, data):
         if not text:
@@ -62,7 +71,7 @@ class PathNodeRouter(object):
         self._add_path(method, path, data)
 
     def _add_path(self, method, path, data):
-        print path[0]
+        # print path[0]
         tree = self[method]
         tree.add(path, data)
 
@@ -112,14 +121,17 @@ def merge_node(root_node, path_nodes, data):
 class PathTree(object):
     def __init__(self):
         self._tree = []
+        self.paths = []
 
     def add(self, path, data):
+        self.paths.append((path, data))
+
         for root in self._tree:
             if root == path[0]:
                 # Merge to this node
-                print 'merge'
+                # print 'merge'
                 merge_node(root, path[1:], data)
-                print root
+                # print root
 
                 return
 

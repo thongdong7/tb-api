@@ -1,7 +1,9 @@
 from abc import ABCMeta, abstractproperty
 
+import six
 
-class Path(object):
+
+class Path(six.Iterator):
     def __init__(self):
         self.items = []
 
@@ -19,7 +21,7 @@ class Path(object):
 
         return self
 
-    def next(self):
+    def __next__(self):
         # print 'index', self.cache_index, self.items
         self.cache_index += 1
         if len(self.items) >= self.cache_index:

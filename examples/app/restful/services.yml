@@ -4,21 +4,36 @@ requirements: []
 #  - resource: 'settings.yml'
 
 parameters:
-  API_ModuleSuffix: Service
+#  API_ModuleSuffix: Service
 #  API_AppHandler:
 #    - FlaskCrossDomain
 #    - FlaskLogin
+  API_CORS:
+    "/api/*": {"origins": "*"}
+
 
   API_Config:
-    services:
-      Client:
-        path: clients
+    paths:
+      "clients":
         tags: [Client]
-        methods:
-          list:
-            http_method: GET
-            path: ~
-            fields:
+        get:
+          method: $ClientService.list
+          summary: Get list clients
+        post:
+          method: $ClientService.create
+          summary: Create new client
+          fields:
+            - name: name
+              description: Client Name
+      "clients/{client_id}":
+        tags: [Client]
+        get:
+          method: $ClientService.get_by_id
+          summary: Get client info
+          fields:
+            - name: client_id
+              description: Client ID
+
 
 services:
   Login: flask_login.login_required

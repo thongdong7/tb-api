@@ -6,6 +6,7 @@ from flask import Response
 from flask import request
 from tb_api.crossdomain import crossdomain
 from tb_api.exception import APIError, format_html
+from tb_api.router import PathRouter
 from tb_api.utils.json_utils import JsonDumper
 from tb_api.utils.response_utils import build_error_response, error_response, build_response
 from tb_api.utils.swagger_utils import flask_build_swagger
@@ -40,11 +41,11 @@ def load_app(loader, static_folder='static', project_dir=None):
 
         return "Hello World!"
 
-    def _handle_api(module_name, method_name):
+    def _handle_api(url, http_method):
         try:
-            module_name = module_name.replace('-', '_')
-            method_name = method_name.replace('-', '_')
-            method = loader.get_method(module_name, method_name)
+            # module_name = module_name.replace('-', '_')
+            # method_name = method_name.replace('-', '_')
+            method = loader.get_method(http_method, url)
             # print(method)
 
             params = {}
@@ -100,15 +101,15 @@ def load_app(loader, static_folder='static', project_dir=None):
                         'hint': 'Access {0}?_format=html for more info'.format(request.url)
                     })
 
-    @app.route("/api/<module_name>")
-    def api_call(module_name):
-        return _handle_api(module_name, method_name='index')
+    @app.route("/api/<path:path>", methods=PathRouter.support_methods)
+    def api_call(path):
+        return _handle_api('/%s' % path, http_method=request.method.lower())
 
-    @app.route("/api/<module_name>/<method_name>")
-    def api_call_full(module_name, method_name):
-        # print(request.args)
-
-        return _handle_api(module_name, method_name)
+    # @app.route("/api/<module_name>/<method_name>")
+    # def api_call_full(module_name, method_name):
+    #     # print(request.args)
+    #
+    #     return _handle_api(module_name, method_name)
 
     @app.route("/swagger.json")
     @crossdomain(origin='*')

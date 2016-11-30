@@ -1,7 +1,7 @@
 import unittest
 from pprint import pprint
 
-from tb_api.model import APIConfig
+from tb_api.model.config import APIConfig
 from tb_api.utils.swagger_utils import build_swagger
 
 
@@ -53,7 +53,8 @@ class SwaggerUtilsTestCase(unittest.TestCase):
     def test_restful(self):
         data = {
             "paths": {
-                "/clients": {
+                "clients": {
+                    "tags": ['Client'],
                     "get": {
                         "method": "$ClientService.list",
                         "summary": "List clients"
@@ -69,16 +70,19 @@ class SwaggerUtilsTestCase(unittest.TestCase):
         ret = gen_swagger(data)
         paths = ret['paths']
 
-        pprint(paths)
+        # pprint(paths)
 
         self.assertIn('/clients', paths)
-        paths_clients = paths['clients']
+        paths_clients = paths['/clients']
 
         self.assertIn('get', paths_clients)
         self.assertIn('post', paths_clients)
 
+        # Validate tags
+        paths_clients_get = paths_clients['get']
+        self.assertEqual(['Client'], paths_clients_get['tags'])
 
-        pprint(ret)
+        # pprint(ret)
 
 
 if __name__ == '__main__':
