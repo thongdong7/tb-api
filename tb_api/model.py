@@ -72,3 +72,4 @@ class APIConfig(object):
 
     def get_config(self, module_path, method_path):
         return self.path_map.get(module_path, {}).get(method_path)
+
