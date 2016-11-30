@@ -1,0 +1,26 @@
+requirements: []
+
+#imports:
+#  - resource: 'settings.yml'
+
+parameters:
+  API_ModuleSuffix: Service
+#  API_AppHandler:
+#    - FlaskCrossDomain
+#    - FlaskLogin
+
+  API_Config:
+    services:
+      Client:
+        path: clients
+        tags: [Client]
+        methods:
+          list:
+            http_method: GET
+            path: ~
+            fields:
+
+services:
+  Login: flask_login.login_required
+  ClientService:
+    class: my_package.client.ClientService
