@@ -5,72 +5,6 @@ from tb_api.model.router import RouterResult
 from tb_api.utils.router_utils import search_url
 
 
-class InvalidPathError(Exception):
-    pass
-
-
-def path_to_branch(path, data):
-    root = None
-    current_node = None
-    # print 'patha', path[0], '-', path[1]
-    for node in path:
-        # print 'node', node
-        if root is None:
-            root = node
-            current_node = node
-        else:
-            # print 'add_child', current_node, node
-            current_node.add_child(node)
-            current_node = node
-
-    current_node.data = data
-
-    return root
-
-
-def merge_node(root_node, path_nodes, data):
-    if not path_nodes:
-        return
-
-    first_path_node = path_nodes[0]
-
-    for child_node in root_node:
-        if child_node == first_path_node:
-            merge_node(child_node, path_nodes[1:], data)
-            return
-
-    root_node.add_child(path_to_branch(path_nodes, data))
-
-
-class PathTree(object):
-    def __init__(self):
-        self._tree = []
-
-    def add(self, path, data):
-        for root in self._tree:
-            if root == path[0]:
-                # Merge to this node
-                print 'merge'
-                merge_node(root, path[1:], data)
-                print root
-
-                return
-
-        # Create new node
-        root = path_to_branch(path, data)
-
-        self._tree.append(root)
-
-    def search(self, url):
-        # TODO Improve performance
-        for root in self._tree:
-            result = search_url(root, url)
-            if result.match:
-                return result
-
-        return RouterResult.not_match()
-
-
 class PathNodeRouter(object):
     path_pattern = re.compile('([^{}]+|{(\w+)})')
 
@@ -136,3 +70,69 @@ class PathNodeRouter(object):
         tree = self[method]
 
         return tree.search(url)
+
+
+class InvalidPathError(Exception):
+    pass
+
+
+def path_to_branch(path, data):
+    root = None
+    current_node = None
+    # print 'patha', path[0], '-', path[1]
+    for node in path:
+        # print 'node', node
+        if root is None:
+            root = node
+            current_node = node
+        else:
+            # print 'add_child', current_node, node
+            current_node.add_child(node)
+            current_node = node
+
+    current_node.data = data
+
+    return root
+
+
+def merge_node(root_node, path_nodes, data):
+    if not path_nodes:
+        return
+
+    first_path_node = path_nodes[0]
+
+    for child_node in root_node:
+        if child_node == first_path_node:
+            merge_node(child_node, path_nodes[1:], data)
+            return
+
+    root_node.add_child(path_to_branch(path_nodes, data))
+
+
+class PathTree(object):
+    def __init__(self):
+        self._tree = []
+
+    def add(self, path, data):
+        for root in self._tree:
+            if root == path[0]:
+                # Merge to this node
+                print 'merge'
+                merge_node(root, path[1:], data)
+                print root
+
+                return
+
+        # Create new node
+        root = path_to_branch(path, data)
+
+        self._tree.append(root)
+
+    def search(self, url):
+        # TODO Improve performance
+        for root in self._tree:
+            result = search_url(root, url)
+            if result.match:
+                return result
+
+        return RouterResult.not_match()

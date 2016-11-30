@@ -1,6 +1,6 @@
 import unittest
 
-from tb_api.utils.path_utils import PathNodeRouter
+from tb_api.router import PathNodeRouter
 
 
 class TestRouterTestCase(unittest.TestCase):
