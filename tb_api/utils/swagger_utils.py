@@ -44,7 +44,7 @@ def _build_method_paths(method_config):
         for field in method_config.fields:
             parameter = {
                 'name': field.name,
-                'in': 'query',
+                'in': field.param_in,
                 'description': field.description,
                 'required': field.required,
             }

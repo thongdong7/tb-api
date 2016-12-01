@@ -1,3 +1,4 @@
+from __future__ import print_function
 from os.path import abspath
 
 from tb_api.router import PathRouter
@@ -26,6 +27,7 @@ class APIFieldConfig(object):
         self.description = config.get('description', '')
         self.required = config.get('required', True)
         self.type = config.get('type', 'string')
+        self.param_in = config.get('in', 'query')
         self.defaultValue = config.get('default')
 
 
@@ -128,4 +130,11 @@ class APIConfig(object):
 
                 method_config = APIMethodConfig(http_methods=[http_method], **params)
 
-                self.path_router.add_path(method=http_method, text=path_text, data=method_config)
+                path = self.path_router.add_path(method=http_method, text=path_text, data=method_config)
+
+                # Update param_in (for swagger)
+                for field in method_config.fields:
+                    for node in path:
+                        if node.is_params and node.value == field.name:
+                            field.param_in = 'path'
+                            break

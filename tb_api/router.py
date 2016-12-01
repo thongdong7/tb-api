@@ -70,6 +70,8 @@ class PathRouter(object):
 
         self._add_path(method, path, data)
 
+        return path
+
     def _add_path(self, method, path, data):
         # print path[0]
         tree = self[method]
