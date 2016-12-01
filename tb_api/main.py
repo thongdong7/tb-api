@@ -1,6 +1,7 @@
 # encoding=utf-8
 from os.path import exists, join
 
+from copy import deepcopy
 from flask import Flask
 from flask import Response
 from flask import request
@@ -46,20 +47,24 @@ def load_app(loader, static_folder='static', project_dir=None):
         try:
             # module_name = module_name.replace('-', '_')
             # method_name = method_name.replace('-', '_')
-            (method, method_config), params = loader.get_method(http_method, url)
+            (method, method_config), path_params = loader.get_method(http_method, url)
             # print(method)
 
+            # Copy parameters in path to avoid
+            params = deepcopy(path_params)
+
+            # Get parameters from url
             for k in request.args.keys():
                 if k in ignore_fields:
                     continue
                 # print(k)
                 params[k] = parse_request_param(method_config, field=k, value=request.args.get(k))
 
-                # print(params)
-
-            if request.json:
-                for field in request.json:
-                    params[field] = parse_request_param(method_config, field=field, value=request.json[field])
+            # Get parameters from body
+            request_json = request.get_json()
+            if request_json:
+                for field in request_json:
+                    params[field] = parse_request_param(method_config, field=field, value=request_json[field])
 
             data = method(**params)
             if isinstance(data, Response):
