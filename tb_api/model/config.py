@@ -21,13 +21,16 @@ class APIMethodConfig(object):
     def __getattr__(self, item):
         return self.kwargs.get(item)
 
+    def get_field(self, name):
+        return self.field_map.get(name)
+
 
 class APIFieldConfig(object):
     def __init__(self, config):
         self.name = config['name']
         self.description = config.get('description', '')
         self.required = config.get('required', True)
-        self.type = config.get('type', 'string')
+        self.type = self._clean_type(config.get('type', 'string'))
         self.param_in = config.get('in', 'query')
         self.defaultValue = config.get('default')
 
@@ -38,6 +41,21 @@ class APIFieldConfig(object):
             self.type = 'float'
         else:
             self.type = 'string'
+
+    @staticmethod
+    def _clean_type(param_type):
+        if param_type == 'int':
+            return 'integer'
+
+        return param_type
+
+    def parse_value(self, value):
+        if self.type == 'integer':
+            return int(value)
+        elif self.type == 'float':
+            return float(value)
+
+        return value
 
 
 class APIConfig(object):
@@ -125,6 +143,10 @@ class APIConfig(object):
                 module_name, method_name = parse_method_path(path_method_config.get('method'))
 
                 fields = [APIFieldConfig(_) for _ in path_method_config.get('fields', [])]
+                field_map = {}
+                for field in fields:
+                    field_map[field.name] = field
+
                 method_tags = tags + path_method_config.get('tags', [])
 
                 params = {
@@ -132,6 +154,7 @@ class APIConfig(object):
                     'method_name': method_name,
                     'fields': fields,
                     'tags': method_tags,
+                    'field_map': field_map,
                 }
 
                 for field, param_field, default_value in self.path_copy_fields:

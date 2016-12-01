@@ -8,6 +8,7 @@ from tb_api.crossdomain import crossdomain
 from tb_api.exception import APIError, format_html
 from tb_api.router import PathRouter
 from tb_api.utils.json_utils import JsonDumper
+from tb_api.utils.param_utils import parse_request_param
 from tb_api.utils.response_utils import build_error_response, error_response, build_response
 from tb_api.utils.swagger_utils import flask_build_swagger
 
@@ -45,14 +46,14 @@ def load_app(loader, static_folder='static', project_dir=None):
         try:
             # module_name = module_name.replace('-', '_')
             # method_name = method_name.replace('-', '_')
-            method, params = loader.get_method(http_method, url)
+            (method, method_config), params = loader.get_method(http_method, url)
             # print(method)
 
             for k in request.args.keys():
                 if k in ignore_fields:
                     continue
                 # print(k)
-                params[k] = request.args.get(k)
+                params[k] = parse_request_param(method_config, field=k, value=request.args.get(k))
 
                 # print(params)
 

@@ -60,7 +60,7 @@ class LoaderIOC(Loader):
                 decor = self.ioc.get(decor_name)
                 method = decor(method)
 
-            self._cache_methods[key] = method
+            self._cache_methods[key] = method, method_config
 
         return self._cache_methods[key], router_result.params
 
