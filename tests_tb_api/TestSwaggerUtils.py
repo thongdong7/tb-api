@@ -61,8 +61,18 @@ class SwaggerUtilsTestCase(unittest.TestCase):
                     },
                     "post": {
                         "method": "$ClientService.create",
-                        "summary": "Create client"
+                        "summary": "Create client",
+                        "fields": [{
+                            "name": "body",
+                            "in": "body",
+                            "schema": "Client"
+                        }]
                     }
+                }
+            },
+            "definitions": {
+                "Client": {
+                    "type": "object"
                 }
             }
         }
@@ -82,8 +92,14 @@ class SwaggerUtilsTestCase(unittest.TestCase):
         paths_clients_get = paths_clients['get']
         self.assertEqual(['Client'], paths_clients_get['tags'])
 
-        # pprint(ret)
+        # Validate schema
+        paths_clients_post = paths_clients['post']
+        self.assertEqual({"$ref": "#/definitions/Client"}, paths_clients_post['parameters'][0]['schema'])
 
+        # Validate definitions
+        self.assertIn('definitions', ret)
+        self.assertIn('Client', ret['definitions'])
+        # pprint(ret)
 
 if __name__ == '__main__':
     unittest.main()

@@ -33,6 +33,7 @@ class APIFieldConfig(object):
         self.type = self._clean_type(config.get('type', 'string'))
         self.param_in = config.get('in', 'query')
         self.defaultValue = config.get('default')
+        self.schema = config.get('schema')
 
     def set_field_type(self, flask_type):
         if flask_type == 'int':
@@ -171,3 +172,7 @@ class APIConfig(object):
                             field.param_in = 'path'
                             field.set_field_type(node.type)
                             break
+
+    @property
+    def definitions(self):
+        return self.data.get('definitions', {})

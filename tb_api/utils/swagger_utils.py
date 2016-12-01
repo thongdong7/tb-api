@@ -32,7 +32,8 @@ def build_swagger(config, host):
         "schemes": [
             "http"
         ],
-        "paths": paths
+        "paths": paths,
+        "definitions": config.definitions
     }
 
 
@@ -59,6 +60,11 @@ def _build_method_paths(method_config):
                 parameter['type'] = field.type
             else:
                 parameter['type'] = 'string'
+
+            if field.schema:
+                parameter['schema'] = {
+                    "$ref": "#/definitions/%s" % field.schema
+                }
 
             parameters.append(parameter)
 
