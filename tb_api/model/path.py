@@ -85,6 +85,13 @@ class PathTextNode(PathNode):
 
 
 class PathParamNode(PathNode):
+    def __init__(self, value=None, data=None, param_type=None):
+        super(PathParamNode, self).__init__(value, data)
+        if not param_type:
+            param_type = 'string'
+
+        self.type = param_type
+
     @property
     def is_params(self):
         return True
@@ -92,3 +99,11 @@ class PathParamNode(PathNode):
     @property
     def is_text(self):
         return False
+
+    def parse_value(self, value):
+        if self.type == 'int':
+            return int(value)
+        elif self.type == 'float':
+            return float(value)
+
+        return value

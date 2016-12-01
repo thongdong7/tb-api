@@ -8,7 +8,7 @@ from tb_api.utils.router_utils import search_url
 
 
 class PathRouter(object):
-    path_pattern = re.compile('([^{}]+|{(\w+)})')
+    path_pattern = re.compile('([^{}]+|{(\w+)(:(\w+))?})')
     support_methods = ['get', 'post', 'put', 'patch', 'delete']
 
     def __init__(self):
@@ -59,12 +59,12 @@ class PathRouter(object):
             raise InvalidPathError(text)
 
         path = Path()
-        for text, param in m:
-            # print text, param
+        for text, param, _, param_type in m:
+            # print 'path', text, param, param_type
             if not param:
                 node = PathTextNode(text)
             else:
-                node = PathParamNode(param)
+                node = PathParamNode(param, param_type=param_type)
 
             path.add(node)
 

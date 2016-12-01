@@ -31,6 +31,14 @@ class APIFieldConfig(object):
         self.param_in = config.get('in', 'query')
         self.defaultValue = config.get('default')
 
+    def set_field_type(self, flask_type):
+        if flask_type == 'int':
+            self.type = 'integer'
+        elif flask_type == 'float':
+            self.type = 'float'
+        else:
+            self.type = 'string'
+
 
 class APIConfig(object):
     copy_fields = [
@@ -138,4 +146,5 @@ class APIConfig(object):
                     for node in path:
                         if node.is_params and node.value == field.name:
                             field.param_in = 'path'
+                            field.set_field_type(node.type)
                             break
