@@ -33,7 +33,8 @@ def build_swagger(config, host):
             "http"
         ],
         "paths": paths,
-        "definitions": config.definitions
+        "definitions": config.definitions,
+        "tags": config.tags,
     }
 
 

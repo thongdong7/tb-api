@@ -176,3 +176,7 @@ class APIConfig(object):
     @property
     def definitions(self):
         return self.data.get('definitions', {})
+
+    @property
+    def tags(self):
+        return self.data.get('tags', [])
