@@ -73,6 +73,13 @@ class InvalidMethodError(APIError):
                                                                                                   method_name)
 
 
+class InvalidServiceMethodError(APIError):
+    def __str__(self):
+        service_name, method_name = self.args
+        return "Service '{0}' does not have method '{1}'. Maybe it is not added or has a typo".format(service_name,
+                                                                                                  method_name)
+
+
 class UnauthorizedError(APIError):
     def __str__(self):
         module_name, method_name = self.args

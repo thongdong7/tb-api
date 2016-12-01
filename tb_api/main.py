@@ -45,10 +45,9 @@ def load_app(loader, static_folder='static', project_dir=None):
         try:
             # module_name = module_name.replace('-', '_')
             # method_name = method_name.replace('-', '_')
-            method = loader.get_method(http_method, url)
+            method, params = loader.get_method(http_method, url)
             # print(method)
 
-            params = {}
             for k in request.args.keys():
                 if k in ignore_fields:
                     continue
@@ -94,11 +93,16 @@ def load_app(loader, static_folder='static', project_dir=None):
                     # TODO Handle this case
                     raise
                 else:
-                    # TODO Fix the url
+                    debug_url = request.url
+                    if '?' in debug_url:
+                        debug_url += '&'
+                    else:
+                        debug_url += '?'
+
                     return build_error_response({
                         'ok': False,
                         'message': str(e),
-                        'hint': 'Access {0}?_format=html for more info'.format(request.url)
+                        'hint': 'Access {0}_format=html for more info'.format(debug_url)
                     })
 
     @app.route("/api/<path:path>", methods=PathRouter.support_methods)

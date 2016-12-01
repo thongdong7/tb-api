@@ -1,6 +1,6 @@
 from tb_ioc import IOC
 
-from tb_api.exception import UnauthorizedError
+from tb_api.exception import UnauthorizedError, InvalidMethodError, InvalidServiceMethodError
 from tb_api.loader.core import Loader
 from tb_api.model.config import APIConfig
 
@@ -50,7 +50,10 @@ class LoaderIOC(Loader):
                 service_name = module_name
 
             obj = self.ioc.get(service_name)
-            method = getattr(obj, method_name)
+            try:
+                method = getattr(obj, method_name)
+            except AttributeError:
+                raise InvalidServiceMethodError(service_name, method_name)
 
             # Decor method. useful for authentication check or variable converter
             for decor_name in method_config.require:
@@ -59,7 +62,7 @@ class LoaderIOC(Loader):
 
             self._cache_methods[key] = method
 
-        return self._cache_methods[key]
+        return self._cache_methods[key], router_result.params
 
     def json_dump_cls(self):
         return self.ioc.get_parameter('API_Dumper')

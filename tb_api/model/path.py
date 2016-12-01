@@ -30,7 +30,7 @@ class Path(six.Iterator):
         raise StopIteration
 
 
-class PathNode(object):
+class PathNode(six.Iterator):
     __metaclass__ = ABCMeta
 
     def __init__(self, value=None, data=None):
@@ -46,7 +46,7 @@ class PathNode(object):
 
         return self
 
-    def next(self):
+    def __next__(self):
         # print 'index', self.cache_index, self.items
         self.cache_index += 1
         if len(self.children) >= self.cache_index:
