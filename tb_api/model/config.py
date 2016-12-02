@@ -13,6 +13,9 @@ class Config(object):
         self.port = port
         self.loader = None
 
+        # File to auto-reload when run in debug mode
+        self.extra_files = []
+
 
 class APIMethodConfig(object):
     def __init__(self, **kwargs):

@@ -31,7 +31,17 @@ def start(config):
     app = load_app(config.loader,
                    static_folder=static_folder, project_dir=project_dir)
     try:
-        app.run(host='0.0.0.0', debug=debug, port=port)
+        params = {
+            'host': '0.0.0.0',
+            'debug': debug,
+            'port': port,
+        }
+
+        if debug:
+            # Auto reload when config file change
+            params['extra_files'] = config.extra_files
+
+        app.run(**params)
     except Exception as e:
         if debug:
             logging.exception(e)

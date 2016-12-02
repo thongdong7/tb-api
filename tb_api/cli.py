@@ -61,6 +61,7 @@ def ioc(ctx, app, config_files, module_suffix):
             error_exit_msg('Could not detect app at %s' % app_config_file)
 
         final_config_files.append(app_config_file)
+        config.extra_files = final_config_files
 
     do_start(ctx, LoaderIOC(final_config_files, module_suffix))
 
