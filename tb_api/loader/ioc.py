@@ -83,3 +83,7 @@ class LoaderIOC(Loader):
 
     def get_ignore_fields(self):
         return self.ioc.get_parameter('API_IgnoreFields', [])
+
+    @property
+    def api_version(self):
+        return self.ioc.get_parameter('API_Version')

@@ -9,8 +9,8 @@ parameters:
 #    - FlaskCrossDomain
 #    - FlaskLogin
   API_CORS:
-    "/api/*": {"origins": "*"}
-
+    "/api/v1/*": {"origins": "*"}
+  API_Version: v1
 
   API_Config:
     paths:

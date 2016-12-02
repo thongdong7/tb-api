@@ -9,6 +9,7 @@ from tb_api.crossdomain import crossdomain
 from tb_api.exception import APIError, format_html
 from tb_api.router import PathRouter
 from tb_api.utils.json_utils import JsonDumper
+from tb_api.utils.loader_utils import get_api_url_prefix
 from tb_api.utils.param_utils import parse_request_param
 from tb_api.utils.response_utils import build_error_response, error_response, build_response
 from tb_api.utils.swagger_utils import flask_build_swagger
@@ -32,6 +33,8 @@ def load_app(loader, static_folder='static', project_dir=None):
         handler(app)
 
     static_index_file = join(project_dir, 'index.html')
+
+    api_url_prefix = get_api_url_prefix(loader)
 
     @app.route("/")
     def index():
@@ -115,7 +118,7 @@ def load_app(loader, static_folder='static', project_dir=None):
                         'hint': 'Access {0}_format=html for more info'.format(debug_url)
                     })
 
-    @app.route("/api/<path:path>", methods=PathRouter.support_methods)
+    @app.route(api_url_prefix + "/<path:path>", methods=PathRouter.support_methods)
     def api_call(path):
         return _handle_api('/%s' % path, http_method=request.method.lower())
 
@@ -125,10 +128,10 @@ def load_app(loader, static_folder='static', project_dir=None):
     #
     #     return _handle_api(module_name, method_name)
 
-    @app.route("/swagger.json")
+    @app.route(api_url_prefix + "/swagger.json")
     @crossdomain(origin='*')
     def swagger():
-        data = flask_build_swagger(loader.config)
+        data = flask_build_swagger(loader.config, api_url_prefix=api_url_prefix)
         return build_response(json_dumper, data)
 
     @app.route("/<path>")

@@ -3,13 +3,13 @@ from six.moves.urllib.parse import urlparse
 from flask import request
 
 
-def flask_build_swagger(config):
+def flask_build_swagger(config, api_url_prefix):
     o = urlparse(request.url_root)
 
-    return build_swagger(config, o.netloc)
+    return build_swagger(config, o.netloc, api_url_prefix)
 
 
-def build_swagger(config, host):
+def build_swagger(config, host, api_url_prefix="/api"):
     paths = _build_paths(config)
 
     return {
@@ -28,7 +28,7 @@ def build_swagger(config, host):
             }
         },
         "host": host,
-        "basePath": "/api",
+        "basePath": api_url_prefix,
         "schemes": [
             "http"
         ],
