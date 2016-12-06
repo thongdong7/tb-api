@@ -13,4 +13,4 @@ class JsonDumper(object):
         self.cls = cls
 
     def dumps(self, data):
-        return json.dumps(data, cls=self.cls)
+        return json.dumps(data, cls=self.cls, indent=2)
