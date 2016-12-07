@@ -42,11 +42,12 @@ def search_url(node, url, params={}):
 
 
 def _build_search_result(node, value, params, data=None):
-    params[node.value] = node.parse_value(value)
+    ret_params = params.copy()
+    ret_params[node.value] = node.parse_value(value)
     if data is None:
         data = node.data
 
-    return RouterResult(data, params)
+    return RouterResult(data, ret_params)
 
 
 def _search_child(node, url, params):
