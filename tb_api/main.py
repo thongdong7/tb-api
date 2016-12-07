@@ -1,10 +1,12 @@
 # encoding=utf-8
+import logging
+from copy import deepcopy
 from os.path import exists, join
 
-from copy import deepcopy
 from flask import Flask
 from flask import Response
 from flask import request
+
 from tb_api.crossdomain import crossdomain
 from tb_api.exception import APIError, format_html
 from tb_api.router import PathRouter
@@ -18,7 +20,7 @@ format_field = '_format'
 supported_static_files = set(['favicon.ico'])
 
 
-def load_app(loader, static_folder='static', project_dir=None):
+def load_app(loader, static_folder='static', project_dir=None, debug=False):
     app = Flask(__name__, static_folder=static_folder)
     json_dumper = JsonDumper(cls=loader.json_dump_cls())
     ignore_fields = set([format_field, '_'] + loader.get_ignore_fields())
@@ -64,7 +66,13 @@ def load_app(loader, static_folder='static', project_dir=None):
                 params[k] = parse_request_param(method_config, field=k, value=request.args.get(k))
 
             # Get parameters from body
-            request_json = request.get_json()
+            request_json = None
+            try:
+                request_json = request.get_json()
+            except:
+                # Invalid json in body
+                pass
+
             if request_json:
                 for field in request_json:
                     params[field] = parse_request_param(method_config, field=field, value=request_json[field])
@@ -99,6 +107,9 @@ def load_app(loader, static_folder='static', project_dir=None):
             return Response(content, status=404,
                             mimetype=mimetype)
         except Exception as e:
+            if debug:
+                logging.exception(e)
+
             if hasattr(e, 'to_json'):
                 return build_error_response(e.to_json())
             else:

@@ -29,7 +29,7 @@ def start(config):
     static_folder = join(project_dir, 'static')
 
     app = load_app(config.loader,
-                   static_folder=static_folder, project_dir=project_dir)
+                   static_folder=static_folder, project_dir=project_dir, debug=debug)
     try:
         params = {
             'host': '0.0.0.0',
