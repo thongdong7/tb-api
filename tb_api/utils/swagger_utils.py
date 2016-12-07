@@ -71,7 +71,6 @@ def _build_method_paths(method_config):
 
         ret[method] = {
             "summary": method_config.summary,
-            "description": method_config.description,
             "parameters": parameters,
             # 'produces': [
             #     "text/html",
@@ -90,6 +89,9 @@ def _build_method_paths(method_config):
                 },
             },
         }
+
+        if method_config.description:
+            ret[method]["description"] = method_config.description
 
     return ret
 
