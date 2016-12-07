@@ -12,8 +12,16 @@ Features:
 
 # Install
 
+Server version:
+
 ```
-pip install tb-api
+pip install tb-api[server]
+```
+
+Client version:
+
+```
+pip install tb-api[client]
 ```
 
 # Usage

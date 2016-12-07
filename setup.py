@@ -12,17 +12,18 @@ setup(
     packages=find_packages(exclude=["build", "dist", "tests*"]),
     install_requires=[
         'six==1.10.0',
-        'click==6.6',
-        'flask~=0.11.1',
-        'tb-ioc~=0.2.3',
-        'flask-cors~=3.0.2',
     ],
-    # extras_require={
-    #     'cli': [
-    #         'click==6.6',
-    #         'pyyaml==3.11'
-    #     ],
-    # },
+    extras_require={
+        'client': [
+            'bravado~=8.4.0',
+        ],
+        'server': [
+            'click==6.6',
+            'flask~=0.11.1',
+            'tb-ioc~=0.2.3',
+            'flask-cors~=3.0.2',
+        ]
+    },
     entry_points={
         'console_scripts': [
             'api=tb_api.cli:cli_start'
