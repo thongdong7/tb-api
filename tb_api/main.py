@@ -77,6 +77,11 @@ def load_app(loader, static_folder='static', project_dir=None, debug=False):
                 for field in request_json:
                     params[field] = parse_request_param(method_config, field=field, value=request_json[field])
 
+            # Load file
+            if request.files:
+                for field in request.files:
+                    params[field] = request.files[field]
+
             data = method(**params)
             if isinstance(data, Response):
                 return data
