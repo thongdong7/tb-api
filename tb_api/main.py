@@ -112,8 +112,7 @@ def load_app(loader, static_folder='static', project_dir=None, debug=False):
             return Response(content, status=404,
                             mimetype=mimetype)
         except Exception as e:
-            if debug:
-                logging.exception(e)
+            logging.exception(e)
 
             if hasattr(e, 'to_json'):
                 return build_error_response(e.to_json())
