@@ -90,8 +90,11 @@ def _build_method_paths(method_config):
             },
         }
 
-        if method_config.description:
-            ret[method]["description"] = method_config.description
+        copy_fields = ['description', 'deprecated']
+        for field in copy_fields:
+            value = getattr(method_config, field)
+            if value:
+                ret[method][field] = value
 
     return ret
 
