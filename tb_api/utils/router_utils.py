@@ -38,11 +38,12 @@ def search_url(node, url, params={}):
                 return result
             else:
                 # Match
-                return _build_search_result(node, param_value, params, data=result.data)
+                return _build_search_result(node, param_value, params, data=result.data, other_params=result.params)
 
 
-def _build_search_result(node, value, params, data=None):
+def _build_search_result(node, value, params, data=None, other_params={}):
     ret_params = params.copy()
+    ret_params.update(other_params)
     ret_params[node.value] = node.parse_value(value)
     if data is None:
         data = node.data

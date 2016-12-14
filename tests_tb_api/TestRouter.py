@@ -19,7 +19,7 @@ class TestRouterTestCase(unittest.TestCase):
         self.assertEqual('p2', actual.data)
         self.assertEqual({'client_id': 123}, actual.params)
 
-    def test_02(self):
+    def test_two_params_in_url(self):
         router = PathRouter()
         router.add_path('get', '/clients/{client_id:int}/{abc}', 'p1')
 
