@@ -1,5 +1,6 @@
 # encoding=utf-8
 import logging
+import traceback
 from copy import deepcopy
 from os.path import exists, join
 
@@ -18,6 +19,22 @@ from tb_api.utils.swagger_utils import flask_build_swagger
 
 format_field = '_format'
 supported_static_files = set(['favicon.ico'])
+
+
+def render_error(url, http_method, params, config, error, traceback, json_dumper):
+    content = json_dumper.dumps({
+        'ok': False,
+        'url': url,
+        'http_method': http_method,
+        'params': params,
+        'config': config,
+        'error': error,
+        'traceback': traceback,
+    })
+
+    return Response(content,
+                    mimetype="application/json",
+                    status=404)
 
 
 def load_app(loader, static_folder='static', project_dir=None, debug=False):
@@ -82,7 +99,21 @@ def load_app(loader, static_folder='static', project_dir=None, debug=False):
                 for field in request.files:
                     params[field] = request.files[field]
 
-            data = method(**params)
+            try:
+                data = method(**params)
+            except Exception as e:
+                print(params)
+                logging.exception(e)
+                return render_error(
+                    url=url,
+                    http_method=http_method,
+                    params=params,
+                    config=method_config,
+                    error=str(e),
+                    traceback=traceback.format_exc(),
+                    json_dumper=json_dumper,
+                )
+
             if isinstance(data, Response):
                 return data
 
