@@ -75,6 +75,7 @@ class APIConfig(object):
         ('require', 'require', []),
         ('type', 'type', 'string'),
         ('deprecated', 'deprecated', None),
+        ('handlers', 'handlers', []),
     ]
 
     def __init__(self, data):

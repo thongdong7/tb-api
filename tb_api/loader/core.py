@@ -32,3 +32,7 @@ class Loader(object):
         :return:
         """
         return []
+
+    @abstractmethod
+    def get_method_handler(self, name):
+        pass

@@ -13,6 +13,7 @@ from tb_api.exception import APIError, format_html
 from tb_api.router import PathRouter
 from tb_api.utils.json_utils import JsonDumper
 from tb_api.utils.loader_utils import get_api_url_prefix
+from tb_api.utils.method_utils import build_method_handlers
 from tb_api.utils.param_utils import parse_request_param
 from tb_api.utils.response_utils import build_error_response, error_response, build_response
 from tb_api.utils.swagger_utils import flask_build_swagger
@@ -100,7 +101,12 @@ def load_app(loader, static_folder='static', project_dir=None, debug=False):
                     params[field] = request.files[field]
 
             try:
-                data = method(**params)
+                if method_config.handlers:
+                    _method = build_method_handlers(method, method_config.handlers, loader)
+                else:
+                    _method = method
+
+                data = _method(**params)
             except Exception as e:
                 print(params)
                 logging.exception(e)

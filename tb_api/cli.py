@@ -75,3 +75,6 @@ def do_start(ctx, loader):
 
 def cli_start():
     cli(obj={})
+
+if __name__ == '__main__':
+    cli_start()

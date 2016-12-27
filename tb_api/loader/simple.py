@@ -7,6 +7,9 @@ from tb_api.loader.core import Loader
 
 
 class LoaderSimple(Loader):
+    def get_method_handler(self, name):
+        raise NotImplementedError("Simple loader does not support method handler")
+
     def __init__(self, base_name, module_suffix=""):
         self.module_suffix = module_suffix
         self.base_name = base_name

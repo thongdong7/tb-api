@@ -1,8 +1,7 @@
-from tb_ioc import IOC
-
-from tb_api.exception import UnauthorizedError, InvalidMethodError, InvalidServiceMethodError
+from tb_api.exception import UnauthorizedError, InvalidServiceMethodError
 from tb_api.loader.core import Loader
 from tb_api.model.config import APIConfig
+from tb_ioc import IOC
 
 
 class LoaderIOC(Loader):
@@ -87,3 +86,6 @@ class LoaderIOC(Loader):
     @property
     def api_version(self):
         return self.ioc.get_parameter('API_Version')
+
+    def get_method_handler(self, name):
+        return self.ioc.get(name)
