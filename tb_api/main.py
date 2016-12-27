@@ -22,7 +22,15 @@ format_field = '_format'
 supported_static_files = set(['favicon.ico'])
 
 
-def render_error(url, http_method, params, config, error, traceback, json_dumper):
+def render_error(url, http_method, params, config, error, traceback, json_dumper, exception):
+    if hasattr(exception, 'to_response'):
+        params = exception.to_response()
+        if isinstance(params['response'], dict):
+            params['response'] = json_dumper.dumps(params['response'])
+            params['mimetype'] = "application/json"
+
+        return Response(**params)
+
     content = json_dumper.dumps({
         'ok': False,
         'url': url,
@@ -118,6 +126,7 @@ def load_app(loader, static_folder='static', project_dir=None, debug=False):
                     error=str(e),
                     traceback=traceback.format_exc(),
                     json_dumper=json_dumper,
+                    exception=e,
                 )
 
             if isinstance(data, Response):

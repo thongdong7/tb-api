@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='tb-api',
-    version='1.0.3',
+    version='1.0.5',
     description='Simple Flask API',
     author='Thong Dong',
     author_email='thongdong7@gmail.com',
@@ -20,7 +20,7 @@ setup(
         'server': [
             'click==6.6',
             'flask~=0.11.1',
-            'tb-ioc~=0.2.3',
+            'tb-ioc~=0.3.0',
             'flask-cors~=3.0.2',
         ]
     },
