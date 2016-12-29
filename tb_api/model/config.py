@@ -58,6 +58,10 @@ class APIFieldConfig(object):
             return int(value)
         elif self.type == 'float':
             return float(value)
+        elif self.type == 'boolean':
+            if value == 'true' or value == '1':
+                return True
+            return False
 
         return value
 
