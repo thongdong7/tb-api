@@ -108,6 +108,11 @@ def load_app(loader, static_folder='static', project_dir=None, debug=False):
                 for field in request.files:
                     params[field] = request.files[field]
 
+            # Load form
+            if request.form:
+                for field in request.form:
+                    params[field] = request.form[field]
+
             try:
                 if method_config.handlers:
                     _method = build_method_handlers(method, method_config.handlers, loader)
