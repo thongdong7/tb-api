@@ -4,6 +4,7 @@ import traceback
 from copy import deepcopy
 from os.path import exists, join
 
+import werkzeug
 from flask import Flask
 from flask import Response
 from flask import request
@@ -134,7 +135,7 @@ def load_app(loader, static_folder='static', project_dir=None, debug=False):
                     exception=e,
                 )
 
-            if isinstance(data, Response):
+            if isinstance(data, Response) or isinstance(data, werkzeug.wrappers.Response):
                 return data
 
             try:
