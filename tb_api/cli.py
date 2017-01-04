@@ -1,4 +1,6 @@
 # encoding=utf-8
+import os
+
 import click
 from os.path import join, exists
 
@@ -61,7 +63,21 @@ def ioc(ctx, app, config_files, module_suffix):
             error_exit_msg('Could not detect app at %s' % app_config_file)
 
         final_config_files.append(app_config_file)
+
         config.extra_files = final_config_files
+
+        if config.debug:
+            # Add all YAML files to extra files to auto-reload when config file is changed
+            yaml_files = []
+            for root, subdirs, files in os.walk(config.project_dir):
+                for f in files:
+                    if not f.endswith('.yml'):
+                        continue
+
+                    path = join(root, f)
+                    yaml_files.append(path)
+
+            config.extra_files = yaml_files
 
     do_start(ctx, LoaderIOC(final_config_files, module_suffix))
 
