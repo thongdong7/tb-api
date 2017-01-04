@@ -108,6 +108,8 @@ def path_to_branch(path, data):
 
 def merge_node(root_node, path_nodes, data):
     if not path_nodes:
+        # Update the data for root_node
+        root_node.data = data
         return
 
     first_path_node = path_nodes[0]
