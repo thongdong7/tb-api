@@ -20,7 +20,7 @@ setup(
         'server': [
             'click==6.6',
             'flask~=0.11.1',
-            'tb-ioc~=0.3.0',
+            'tb-ioc~=0.3.4',
             'flask-cors~=3.0.2',
         ]
     },
