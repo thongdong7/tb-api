@@ -6,7 +6,7 @@ python:
   - "pypy"
 # command to install dependencies
 before_install:
-  - pip install -e .[server]
+  - pip install -e .[server] --upgrade
   # Test api script
   - api --help
   - api simple --help
