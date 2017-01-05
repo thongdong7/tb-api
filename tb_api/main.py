@@ -13,7 +13,7 @@ from tb_api.crossdomain import crossdomain
 from tb_api.exception import APIError, format_html
 from tb_api.router import PathRouter
 from tb_api.utils.json_utils import JsonDumper
-from tb_api.utils.loader_utils import get_api_url_prefix
+from tb_api.utils.loader_utils import get_api_url_prefix, get_rpc_url_prefix
 from tb_api.utils.method_utils import build_method_handlers
 from tb_api.utils.param_utils import parse_request_param
 from tb_api.utils.response_utils import build_error_response, error_response, build_response
@@ -64,6 +64,7 @@ def load_app(loader, static_folder='static', project_dir=None, debug=False):
     static_index_file = join(project_dir, 'index.html')
 
     api_url_prefix = get_api_url_prefix(loader)
+    rpc_url_prefix = get_rpc_url_prefix(loader)
 
     @app.route("/")
     def index():
@@ -201,6 +202,11 @@ def load_app(loader, static_folder='static', project_dir=None, debug=False):
         data = flask_build_swagger(loader.config, api_url_prefix=api_url_prefix)
         return build_response(json_dumper, data)
 
+    @app.route(rpc_url_prefix + "/<service>/<method>")
+    def rpc_call(service, method):
+        return "RPC call %s.%s" % (service, method)
+
+
     @app.route("/<path>")
     def static_file(path):
         if path in supported_static_files:
@@ -209,5 +215,6 @@ def load_app(loader, static_folder='static', project_dir=None, debug=False):
                 return open(real_path, 'rb').read()
 
         return error_response('Unknown file %s' % path)
+
 
     return app

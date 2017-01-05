@@ -17,19 +17,10 @@ def start(config):
     :type config: tb_api.model.Config
     :return:
     """
-    project_dir = config.project_dir
+    app = get_app(config)
+
     port = config.port
     debug = config.debug
-
-    if not exists(project_dir):
-        error_exit_msg("Invalid project %s" % project_dir)
-
-    project_dir = abspath(project_dir)
-
-    static_folder = join(project_dir, 'static')
-
-    app = load_app(config.loader,
-                   static_folder=static_folder, project_dir=project_dir, debug=debug)
     try:
         params = {
             'host': '0.0.0.0',
@@ -47,3 +38,24 @@ def start(config):
             logging.exception(e)
 
         error_exit_msg('Could not run on port {0}: {1}'.format(port, str(e)))
+
+
+def get_app(config):
+    """
+
+    :param config:
+    :type config: tb_api.model.Config
+    :return:
+    """
+    project_dir = config.project_dir
+    debug = config.debug
+
+    if not exists(project_dir):
+        error_exit_msg("Invalid project %s" % project_dir)
+
+    project_dir = abspath(project_dir)
+
+    static_folder = join(project_dir, 'static')
+
+    return load_app(config.loader,
+                    static_folder=static_folder, project_dir=project_dir, debug=debug)
