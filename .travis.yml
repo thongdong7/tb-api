@@ -6,12 +6,14 @@ python:
   - "pypy"
 # command to install dependencies
 before_install:
-  - pip install -e .
+  - pip install -e .[server] --upgrade
   # Test api script
   - api --help
   - api simple --help
   - api ioc --help
+  - pip install nose coverage
 
 # command to run tests
 script:
-  - nosetests
+  - nosetests --with-coverage --cover-package=tb_api
+
