@@ -1,4 +1,6 @@
-from tb_api.exception import UnauthorizedError, InvalidServiceMethodError
+from future.utils import raise_with_traceback
+
+from tb_api.exception import UnauthorizedError, InvalidServiceMethodError, InvalidMethodError, InvalidServiceError
 from tb_api.loader.core import Loader
 from tb_api.model.config import APIConfig
 from tb_ioc import IOC
@@ -31,7 +33,7 @@ class LoaderIOC(Loader):
         self.config = APIConfig(self.ioc.get_parameter('API_Config', {}))
         self._cache_methods = {}
 
-    def get_method(self, http_method, url):
+    def get_method_from_url(self, http_method, url):
         router_result = self.config.get_config(http_method, url)
 
         if not router_result.match:
@@ -89,3 +91,20 @@ class LoaderIOC(Loader):
 
     def get_method_handler(self, name):
         return self.ioc.get(name)
+
+    def get_method(self, module_name, method_name):
+        key = '%s-%s' % (module_name, method_name)
+        if key not in self._cache_methods:
+            try:
+                service = self.ioc.get(module_name)
+            except Exception as e:
+                raise_with_traceback(InvalidServiceError(module_name, str(e)))
+
+            if not hasattr(service, method_name):
+                raise InvalidMethodError(module_name, method_name)
+
+            method = getattr(service, method_name)
+
+            self._cache_methods[key] = method
+
+        return self._cache_methods[key]

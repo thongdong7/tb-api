@@ -8,6 +8,10 @@ class Loader(object):
     def get_method(self, module_name, method_name):
         pass
 
+    @abstractmethod
+    def get_method_from_url(self, http_method, url):
+        pass
+
     def json_dump_cls(self):
         return None
 

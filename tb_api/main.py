@@ -8,14 +8,15 @@ import werkzeug
 from flask import Flask
 from flask import Response
 from flask import request
+from future.utils import raise_with_traceback
 
 from tb_api.crossdomain import crossdomain
-from tb_api.exception import APIError, format_html
+from tb_api.exception import APIError, format_html, InvalidMethodParamError, InnerMethodError
 from tb_api.router import PathRouter
 from tb_api.utils.json_utils import JsonDumper
 from tb_api.utils.loader_utils import get_api_url_prefix, get_rpc_url_prefix
 from tb_api.utils.method_utils import build_method_handlers
-from tb_api.utils.param_utils import parse_request_param
+from tb_api.utils.param_utils import parse_request_param, load_request_params
 from tb_api.utils.response_utils import build_error_response, error_response, build_response
 from tb_api.utils.swagger_utils import flask_build_swagger
 
@@ -80,40 +81,16 @@ def load_app(loader, static_folder='static', project_dir=None, debug=False):
         try:
             # module_name = module_name.replace('-', '_')
             # method_name = method_name.replace('-', '_')
-            (method, method_config), path_params = loader.get_method(http_method, url)
+            (method, method_config), path_params = loader.get_method_from_url(http_method, url)
             # print(method)
 
             # Copy parameters in path to avoid
             params = deepcopy(path_params)
 
-            # Get parameters from url
-            for k in request.args.keys():
-                if k in ignore_fields:
-                    continue
-                # print(k)
-                params[k] = parse_request_param(method_config, field=k, value=request.args.get(k))
+            request_params = load_request_params(ignore_fields=ignore_fields)
+            parse_request_param(method_config, request_params)
 
-            # Get parameters from body
-            request_json = None
-            try:
-                request_json = request.get_json()
-            except:
-                # Invalid json in body
-                pass
-
-            if request_json:
-                for field in request_json:
-                    params[field] = parse_request_param(method_config, field=field, value=request_json[field])
-
-            # Load file
-            if request.files:
-                for field in request.files:
-                    params[field] = request.files[field]
-
-            # Load form
-            if request.form:
-                for field in request.form:
-                    params[field] = request.form[field]
+            params.update(request_params)
 
             try:
                 if method_config.handlers:
@@ -121,7 +98,7 @@ def load_app(loader, static_folder='static', project_dir=None, debug=False):
                 else:
                     _method = method
 
-                data = _method(**params)
+                return _call(_method, params)
             except Exception as e:
                 print(params)
                 logging.exception(e)
@@ -135,56 +112,68 @@ def load_app(loader, static_folder='static', project_dir=None, debug=False):
                     json_dumper=json_dumper,
                     exception=e,
                 )
+        except:
+            pass
 
-            if isinstance(data, Response) or isinstance(data, werkzeug.wrappers.Response):
-                return data
-
-            try:
-                # print(data)
-                content = json_dumper.dumps(data)
-            except Exception as e:
-                print ('Error when dump json: {0}. Data: {1}'.format(str(e), data))
-                raise
-            return Response(content,
-                            mimetype="application/json")
-        except APIError as e:
-            error_message = str(e)
-            mimetype = None
-
-            # return request.args.get(format_field)
-            if request.args.get(format_field) == 'html':
-                content = format_html(error_message)
-                mimetype = 'text/html'
-            else:
-                content = json_dumper.dumps({
-                    'ok': False,
-                    'message': error_message
-                })
-                mimetype = 'application/json'
-
-            return Response(content, status=404,
-                            mimetype=mimetype)
+    def _call(_method, params):
+        try:
+            data = _method(**params)
+        except TypeError as e:
+            # This exception is raised when send invalid params to the method
+            raise_with_traceback(InvalidMethodParamError(str(e)))
         except Exception as e:
-            logging.exception(e)
+            # This exception is raised inside method
+            raise_with_traceback(InnerMethodError(str(e)))
 
-            if hasattr(e, 'to_json'):
-                return build_error_response(e.to_json())
-            else:
-                if request.args.get(format_field) == 'html':
-                    # TODO Handle this case
-                    raise
-                else:
-                    debug_url = request.url
-                    if '?' in debug_url:
-                        debug_url += '&'
-                    else:
-                        debug_url += '?'
+        if isinstance(data, Response) or isinstance(data, werkzeug.wrappers.Response):
+            return data
 
-                    return build_error_response({
-                        'ok': False,
-                        'message': str(e),
-                        'hint': 'Access {0}_format=html for more info'.format(debug_url)
-                    })
+        try:
+            # print(data)
+            content = json_dumper.dumps(data)
+        except Exception as e:
+            print('Error when dump json: {0}. Data: {1}'.format(str(e), data))
+            raise
+        return Response(content,
+                        mimetype="application/json")
+    # except APIError as e:
+    #     error_message = str(e)
+    #     mimetype = None
+    #
+    #     # return request.args.get(format_field)
+    #     if request.args.get(format_field) == 'html':
+    #         content = format_html(error_message)
+    #         mimetype = 'text/html'
+    #     else:
+    #         content = json_dumper.dumps({
+    #             'ok': False,
+    #             'message': error_message
+    #         })
+    #         mimetype = 'application/json'
+    #
+    #     return Response(content, status=404,
+    #                     mimetype=mimetype)
+    #     except Exception as e:
+    #         logging.exception(e)
+    #
+    #         if hasattr(e, 'to_json'):
+    #             return build_error_response(e.to_json())
+    #         else:
+    #             if request.args.get(format_field) == 'html':
+    #                 # TODO Handle this case
+    #                 raise
+    #             else:
+    #                 debug_url = request.url
+    #                 if '?' in debug_url:
+    #                     debug_url += '&'
+    #                 else:
+    #                     debug_url += '?'
+    #
+    #                 return build_error_response({
+    #                     'ok': False,
+    #                     'message': str(e),
+    #                     'hint': 'Access {0}_format=html for more info'.format(debug_url)
+    #                 })
 
     @app.route(api_url_prefix + "/<path:path>", methods=PathRouter.support_methods)
     def api_call(path):
@@ -204,8 +193,27 @@ def load_app(loader, static_folder='static', project_dir=None, debug=False):
 
     @app.route(rpc_url_prefix + "/<service>/<method>")
     def rpc_call(service, method):
-        return "RPC call %s.%s" % (service, method)
+        try:
+            method = loader.get_method(service, method)
 
+            params = load_request_params(ignore_fields=ignore_fields)
+
+            return _call(method, params)
+        except APIError as e:
+            error_message = str(e)
+            # return request.args.get(format_field)
+            if request.args.get(format_field) == 'html':
+                content = format_html(error_message)
+                mimetype = 'text/html'
+            else:
+                content = json_dumper.dumps({
+                    'ok': False,
+                    'message': error_message
+                })
+                mimetype = 'application/json'
+
+            return Response(content, status=404,
+                            mimetype=mimetype)
 
     @app.route("/<path>")
     def static_file(path):

@@ -1,0 +1,6 @@
+parameters:
+  API_Version: v1
+
+services:
+  TextService:
+    class: tests_tb_api.t1.TextService

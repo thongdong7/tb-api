@@ -66,6 +66,12 @@ class ImportModuleClassError(APIError):
         return 'Could not find class {0} in {1}'.format(actual_module_name, module_full_name)
 
 
+class InvalidServiceError(APIError):
+    def __str__(self):
+        module_name, message = self.args
+        return "Invalid API '{0}'. Maybe it is not added or has a typo. Detail: {1}".format(module_name, message)
+
+
 class InvalidMethodError(APIError):
     def __str__(self):
         module_name, method_name = self.args
@@ -73,11 +79,21 @@ class InvalidMethodError(APIError):
                                                                                                   method_name)
 
 
+class InvalidMethodParamError(APIError):
+    def __str__(self):
+        return self.args[0]
+
+
+class InnerMethodError(APIError):
+    def __str__(self):
+        return 'Error inside method: %s' % self.args[0]
+
+
 class InvalidServiceMethodError(APIError):
     def __str__(self):
         service_name, method_name = self.args
         return "Service '{0}' does not have method '{1}'. Maybe it is not added or has a typo".format(service_name,
-                                                                                                  method_name)
+                                                                                                      method_name)
 
 
 class UnauthorizedError(APIError):
