@@ -21,6 +21,10 @@ class APIMethodConfig(object):
     def __init__(self, **kwargs):
         self.kwargs = kwargs
 
+        self.field_map = {}
+        for field_config in self.kwargs['fields']:
+            self.field_map[field_config.name] = field_config
+
     def __getattr__(self, item):
         return self.kwargs.get(item)
 
